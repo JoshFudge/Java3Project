@@ -2,16 +2,26 @@ package com.example.java3project;
 
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+
 import java.util.List;
 
 /**
  * This class represents an Author of a book. It has an authorId, a first name, a last name, and a list of books.
  */
+
+@Entity(name = "authors")
 public class Author {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int authorId;
     private String firstName;
     private String lastname;
+
+    @ManyToMany(mappedBy = "authorList")
+    @JsonBackReference
     private List<Book> bookList;
 
     /**
@@ -21,14 +31,7 @@ public class Author {
      * @param lastname the last name of the author
      * @param bookList the list of books the author has written
      */
-    public Author(int authorId, String firstName, String lastname
-            , List<Book> bookList
-    ) {
-        this.authorId = authorId;
-        this.firstName = firstName;
-        this.lastname = lastname;
-        this.bookList = bookList;
-    }
+
 
     /**
      * Getter for authorId
@@ -100,13 +103,13 @@ public class Author {
      * This method returns a string of the books the author has written
      * @return a string of the books the author has written
      */
-    public String getBookListString() {
-        String bookListString = "";
-        for (Book book : bookList) {
-            bookListString += book.getTitle() + ", ";
-        }
-        return bookListString;
-    }
+//    public String getBookListString() {
+//        String bookListString = "";
+//        for (Book book : bookList) {
+//            bookListString += book.getTitle() + ", ";
+//        }
+//        return bookListString;
+//    }
 
     /**
      * This method returns a string representation of the Author
@@ -114,6 +117,7 @@ public class Author {
      */
     @Override
     public String toString() {
-        return "\n\nauthorId:" + authorId + "\nfirstName:" + firstName + "\nlastname:" + lastname  + "\nbookList:" + getBookListString();
+        return "\n\nauthorId:" + authorId + "\nfirstName:" + firstName + "\nlastname:" + lastname  + "\nbookList:";
+//                + getBookListString();
     }
 }

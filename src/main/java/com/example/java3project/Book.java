@@ -1,8 +1,7 @@
 package com.example.java3project;
 
 import com.example.java3project.Author;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.List;
 
@@ -16,9 +15,17 @@ public class Book {
     @Id
     private String isbn;
     private String title;
+
     private int editionNumber;
     private String copyright;
-//    private List<Author> authorList;
+
+    @ManyToMany
+    @JoinTable(
+                name = "author_isbn",
+                joinColumns = @JoinColumn(name = "isbn"),
+                inverseJoinColumns = @JoinColumn(name = "id")
+        )
+    private List<Author> authorList;
 
     /**
      * Constructor for Book
@@ -98,17 +105,17 @@ public class Book {
      * Getter for authorList
      * @return the authorList
      */
-//    public List<Author> getAuthorList() {
-//        return authorList;
-//    }
+    public List<Author> getAuthorList() {
+        return authorList;
+    }
 
     /**
      * Setter for authorList
      * @param authorList the authorList
      */
-//    public void setAuthorList(List<Author> authorList) {
-//        this.authorList = authorList;
-//    }
+    public void setAuthorList(List<Author> authorList) {
+        this.authorList = authorList;
+    }
 
     /**
      * This method returns a string of the author list

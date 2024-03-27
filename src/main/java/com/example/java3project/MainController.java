@@ -23,4 +23,23 @@ public class MainController {
     Book getBookById(@PathVariable String isbn) {
         return bookRepository.findBookByIsbn(isbn);
     }
+
+
+
+    public static final String AUTHOR = "/authors";
+
+    @Autowired
+    private AuthorRepository authorRepository;
+
+    @GetMapping(path=AUTHOR)
+    public @ResponseBody
+    Iterable<Author> getAllAuthors() {
+        return authorRepository.findAll();
+    }
+
+    @GetMapping(path=AUTHOR + "/{authorId}")
+    public @ResponseBody
+    Author getAuthorById(@PathVariable int authorId) {
+        return authorRepository.findAuthorByAuthorId(authorId);
+    }
 }
