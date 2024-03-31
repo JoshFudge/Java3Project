@@ -1,6 +1,7 @@
 package com.example.java3project;
 
 
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,9 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class MainController {
 
+
+
+    ///////////////////////////////////////////////////////// BOOKS
     public static final String BOOK = "/books";
     @Autowired
     private BookRepository bookRepository;
@@ -46,16 +50,34 @@ public class MainController {
 
     @PutMapping(path=BOOK + "/{isbn}")
     public @ResponseBody
-    String updateBook(@PathVariable String isbn, @RequestParam String title, @RequestParam int editionNumber, @RequestParam String copyRight) {
+    String updateBook(@PathVariable String isbn, @RequestParam String title, @RequestParam int edition_number, @RequestParam String copyright, @RequestParam int id) {
         Book book = bookRepository.findBookByIsbn(isbn);
         book.setTitle(title);
-        book.setEditionNumber(editionNumber);
-        book.setCopyright(copyRight);
+        book.setEditionNumber(edition_number);
+        book.setCopyright(copyright);
+        Author author = authorRepository.findAuthorByAuthorId(id);
+        if (author != null) {
+            List<Author> authorList = book.getAuthorList();
+            if (!authorList.contains(author)) {
+                authorList.add(author);
+                book.setAuthorList(authorList);
+            }
+
+        }
         bookRepository.save(book);
         return "Updated";
     }
 
+    @DeleteMapping(path=BOOK + "/{isbn}")
+    public @ResponseBody
+    String deleteBook(@PathVariable String isbn) {
+        Book book = bookRepository.findBookByIsbn(isbn);
+        bookRepository.delete(book);
+        return "Deleted";
+    }
 
+
+/////////////////////////////////////////////////////AUTHORS
     public static final String AUTHOR = "/authors";
 
     @Autowired
@@ -89,7 +111,13 @@ public class MainController {
     @PutMapping(path=AUTHOR + "/{authorId}")
     public @ResponseBody
     String updateAuthor(@PathVariable int authorId, @RequestParam String firstName, @RequestParam String lastName) {
+
+
+
         Author author = authorRepository.findAuthorByAuthorId(authorId);
+
+
+
         author.setFirstName(firstName);
         author.setLastname(lastName);
         authorRepository.save(author);
@@ -97,10 +125,20 @@ public class MainController {
     }
 
 
+
     @DeleteMapping(path=AUTHOR + "/{authorId}")
     public @ResponseBody
     String deleteAuthor(@PathVariable int authorId) {
-        authorRepository.deleteById(authorId);
+        Author author = authorRepository.findAuthorByAuthorId(authorId);
+        List<Book> bookList = bookRepository.findBooksByAuthorListContaining(author);
+        System.out.println(bookList);
+        for (Book book : bookList) {
+            List<Author> authorList = book.getAuthorList();
+            authorList.remove(author);
+            book.setAuthorList(authorList);
+            bookRepository.save(book);
+        }
+        authorRepository.delete(author);
         return "Deleted";
     }
 

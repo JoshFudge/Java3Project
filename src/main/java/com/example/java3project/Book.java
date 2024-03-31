@@ -3,6 +3,7 @@ package com.example.java3project;
 import com.example.java3project.Author;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class Book {
                 joinColumns = @JoinColumn(name = "isbn"),
                 inverseJoinColumns = @JoinColumn(name = "id")
         )
-    private List<Author> authorList;
+    private List<Author> authorList = new ArrayList<>();
 
     /**
      * Constructor for Book
