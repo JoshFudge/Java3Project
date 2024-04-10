@@ -66,17 +66,21 @@ public class MainController {
     @PostMapping(path=BOOK)
     public @ResponseBody
     String addNewBook(@RequestParam String isbn, @RequestParam String title, @RequestParam int editionNumber, @RequestParam String copyright, @RequestParam int authorId) {
+        // Create a new book
         Book book = new Book();
+        // Set the fields
         book.setIsbn(isbn);
         book.setTitle(title);
         book.setCopyright(copyright);
         book.setEditionNumber(editionNumber);
         Author author = authorRepository.findAuthorByAuthorId(authorId);
+        // If the author exists, add the author to the book
         if (author != null) {
             List<Author> authorList = book.getAuthorList();
             authorList.add(author);
             book.setAuthorList(authorList);
         }
+        // Save the book
         bookRepository.save(book);
         return "Saved";
     }
@@ -93,11 +97,14 @@ public class MainController {
     @PutMapping(path=BOOK + "/{isbn}")
     public @ResponseBody
     String updateBook(@PathVariable String isbn, @RequestParam String title, @RequestParam int edition_number, @RequestParam String copyright, @RequestParam int id) {
+        // Find the book
         Book book = bookRepository.findBookByIsbn(isbn);
+        // Set the fields
         book.setTitle(title);
         book.setEditionNumber(edition_number);
         book.setCopyright(copyright);
         Author author = authorRepository.findAuthorByAuthorId(id);
+        // If the author exists, add the author to the book
         if (author != null) {
             List<Author> authorList = book.getAuthorList();
             if (!authorList.contains(author)) {
@@ -106,6 +113,7 @@ public class MainController {
             }
 
         }
+        // Save the book
         bookRepository.save(book);
         return "Updated";
     }
@@ -118,7 +126,9 @@ public class MainController {
     @DeleteMapping(path=BOOK + "/{isbn}")
     public @ResponseBody
     String deleteBook(@PathVariable String isbn) {
+        // Find the book
         Book book = bookRepository.findBookByIsbn(isbn);
+        // Delete the book
         bookRepository.delete(book);
         return "Deleted";
     }
@@ -168,9 +178,12 @@ public class MainController {
     @PostMapping(path=AUTHOR)
     public @ResponseBody
     String addNewAuthor(@RequestParam String firstName, @RequestParam String lastName) {
+        // Create a new author
         Author author = new Author();
+        // Set the fields
         author.setFirstName(firstName);
         author.setLastname(lastName);
+        // Save the author
         authorRepository.save(author);
         return "Saved";
     }
@@ -187,10 +200,13 @@ public class MainController {
     public @ResponseBody
     String updateAuthor(@PathVariable int authorId, @RequestParam String firstName, @RequestParam String lastName) {
 
+        // Find the author
         Author author = authorRepository.findAuthorByAuthorId(authorId);
 
+        // Set the fields
         author.setFirstName(firstName);
         author.setLastname(lastName);
+        // Save the author
         authorRepository.save(author);
         return "Updated";
     }
@@ -204,9 +220,12 @@ public class MainController {
     @DeleteMapping(path=AUTHOR + "/{authorId}")
     public @ResponseBody
     String deleteAuthor(@PathVariable int authorId) {
+        // Find the author
         Author author = authorRepository.findAuthorByAuthorId(authorId);
+        // Find the books that the author has written
         List<Book> bookList = bookRepository.findBooksByAuthorListContaining(author);
         System.out.println(bookList);
+        // Remove the author from the books
         for (Book book : bookList) {
             List<Author> authorList = book.getAuthorList();
             authorList.remove(author);
